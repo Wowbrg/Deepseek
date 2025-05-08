@@ -1,0 +1,60 @@
+# Временные файлы и редакторы
+*.swp
+*~
+.DS_Store
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Логи
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Сборочные файлы и артефакты
+dist/
+build/
+out/
+target/
+coverage/
+
+# Зависимости
+node_modules/
+vendor/
+bower_components/
+
+# Файлы окружения
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Кэши
+.cache/
+*.cache
+*.bak
+*.tmp
+
+# Тестовые и отладочные файлы
+*.pid
+*.seed
+*.pid.lock
+debug/
+
+# Документация и прочее
+*.md.bak
+*.orig
+
+# Специфичные для ОС
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Файлы дампов и баз данных
+*.sql
+*.sqlite
+*.dump

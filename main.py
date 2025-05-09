@@ -2,42 +2,47 @@ import httpx
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 
-API_KEY = "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"  # Твой OpenRouter API ключ
-
+API_KEY = "свой"  # OpenRouter API Key
+BOT_TOKEN = "свой"  # Telegram Bot Token
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
 
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://t.me/YourBotUsername",  # Замени на ссылку на своего бота
+        "X-Title": "DeepseekTelegramBot"
+    }
+
+    data = {
+        "model": "deepseek/deepseek-chat",
+        "messages": [{"role": "user", "content": user_message}]
+    }
+
     try:
-        # Формируем запрос в OpenRouter
-        headers = {
-            "Authorization": f"Bearer {API_KEY}",
-            "Content-Type": "application/json",
-        }
-
-        data = {
-            "model": "gpt-3.5-turbo",  # Используем стандартную модель, чтобы проверить
-            "messages": [{"role": "user", "content": user_message}]
-        }
-
-        # Отправка запроса в OpenRouter API
         async with httpx.AsyncClient() as client:
-            response = await client.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
+            response = await client.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers=headers,
+                json=data,
+                timeout=30
+            )
+            response.raise_for_status()
             response_data = response.json()
 
-        # Проверяем, что ответ содержит ключ 'choices'
         if "choices" in response_data:
             reply = response_data["choices"][0]["message"]["content"]
             await update.message.reply_text(reply)
         else:
-            await update.message.reply_text("Error: Response does not contain 'choices'.")
+            await update.message.reply_text("Ошибка: в ответе нет ключа 'choices'.")
 
+    except httpx.HTTPStatusError as e:
+        await update.message.reply_text(f"HTTP ошибка: {e.response.status_code} {e.response.text}")
     except Exception as e:
-        await update.message.reply_text(f"Error: {str(e)}")
+        await update.message.reply_text(f"Ошибка: {str(e)}")
 
-
-if name == 'main':
-    app = ApplicationBuilder().token("7813435123:AAFF2kaJRgeZxdHznkVbbU5l9y9iEJq4MDA").build()  # Токен Telegram-бота
-
+if __name__ == '__main__':
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.run_polling()
